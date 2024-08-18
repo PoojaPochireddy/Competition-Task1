@@ -20,7 +20,8 @@ namespace MarsQACompetitionTask.Pages
         private IWebElement Email => driver.FindElement(By.XPath("(//INPUT[@type='text'])[2]"));
         private IWebElement Password => driver.FindElement(By.XPath("//INPUT[@type='password']"));
         private IWebElement LoginBtn => driver.FindElement(By.XPath("//BUTTON[@class='fluid ui teal button'][text()='Login']"));
-
+        
+        
         public static object ExcelLibHelper { get; private set; }
 
         public void SigninStep()
@@ -31,7 +32,7 @@ namespace MarsQACompetitionTask.Pages
             Password.SendKeys(ReadJsonData.GetData("User.password"));
             LoginBtn.Click();
         }
-        public void Login()
+       /* public void Login()
         {
             SignInBtn.Click();
 
@@ -47,6 +48,6 @@ namespace MarsQACompetitionTask.Pages
             //Click on Login Button
             driver.FindElement(By.XPath("//BUTTON[@class='fluid ui teal button'][text()='Login']")).Click();
 
-        }
+        }*/
     }
 }

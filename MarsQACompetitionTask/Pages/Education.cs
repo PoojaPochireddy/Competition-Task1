@@ -6,6 +6,10 @@ using System.Linq;
 using System.Threading;
 using System.Collections;
 using Microsoft.SqlServer.Server;
+using MarsQACompetitionTask.GlobalHelpers;
+using NUnit.Framework;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 namespace MarsQACompetitionTask.Pages
 {
@@ -13,62 +17,46 @@ namespace MarsQACompetitionTask.Pages
     public class Education
     {
         private readonly IWebDriver driver;
+        private IWebElement EducationTab1 => driver.FindElement(By.XPath("//a[text()='Education']"));
+        private IWebElement AddNew => driver.FindElement(By.XPath("//div[@class='ui bottom attached tab segment tooltip-target active']//div[@class='ui teal button '][normalize-space()='Add New']"));
+        private IWebElement CollegeName => driver.FindElement(By.Name("instituteName")); 
+        private IWebElement CountryNameDropdown => driver.FindElement(By.Name("country"));
+        private IWebElement TitleDropdown => driver.FindElement(By.Name("title"));
+        private IWebElement Degree => driver.FindElement(By.Name("degree"));
+        private IWebElement YearOfGraduationDropdown => driver.FindElement(By.Name("yearOfGraduation"));
+        private IWebElement AddEducation => driver.FindElement(By.XPath("//input[@value='Add']"));
+        private IWebElement AddMessagechk => driver.FindElement(By.XPath("//*[normalize-space()='Education has been added']"));
+        private IWebElement AddMessage => driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
+        private IWebElement CancelEducation => driver.FindElement(By.XPath("//input[@value='Cancel']"));
+        private IWebElement UpdateBtn => driver.FindElement(By.XPath("//input[@value='Update']"));
+        private IWebElement UpdateMessage => driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
+        private IWebElement CancelBtn1 => driver.FindElement(By.XPath("//input[@value='Cancel']"));
+        private IWebElement DeleteMessage => driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
+
+        //*Duplicate Education Details cant be added so cleanup the existing education records first //
+        public void CleanEducationTable()
+        {
+            var Removebuttons = driver.FindElements(By.CssSelector("[class='remove icon']"));
+            for (int i = 0; i < Removebuttons.Count; i++)
+            {
+                IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+                string script = "arguments[0].click();";
+                jsExecutor.ExecuteScript(script, Removebuttons[i]);
+
+            }
+
+        }
         public Education(IWebDriver driver)
         {
             this.driver = driver;
         }
         public void EducationTab()
         {
-            IWebElement EducationTab1 = driver.FindElement(By.XPath("//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[1]/a[3]"));
-            //IWebElement EducationTab1 = driver.FindElement(By.XPath("(//a[@data-tab='third'])[1]"));
             EducationTab1.Click();
-            //Thread.Sleep(10000);
         }
-        public void CreateEducation()
+        public String CreateEducation()
         {
             Thread.Sleep(2000);
-            
-            /*
-            IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
-            CollegeName.Click();
-            CollegeName.Clear();
-            CollegeName.SendKeys("Merits");
-            
-          /*  IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
-            CollegeName.Click();
-            CollegeName.SendKeys(Utilities.ReadJsonData.GetData("Education.CollegeUniversityName"));*/
-
-
-            /*IWebElement CountryNameDropdown = driver.FindElement(By.Name("country"));
-            CountryNameDropdown.Click();
-            CountryNameDropdown.SendKeys("Australia");
-
-            /*IWebElement CountryNameDropdown = driver.FindElement(By.Name("country"));
-            CountryNameDropdown.Click();
-            CountryNameDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education.country"));*/
-
-            /* IWebElement TitleDropdown = driver.FindElement(By.Name("title"));
-             TitleDropdown.Click();
-             TitleDropdown.SendKeys("B.Tech");
-
-             /*IWebElement TitleDropdown = driver.FindElement(By.Name("title"));
-             TitleDropdown.Click();
-             TitleDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education.title"));*/
-
-            /*IWebElement Degree = driver.FindElement(By.Name("degree"));
-             Degree.Click();
-             Degree.Clear();
-             Degree.SendKeys("Graduate");
-            
-           /* IWebElement Degree = driver.FindElement(By.Name("degree"));
-            Degree.Click();
-            Degree.Clear();
-            Degree.SendKeys(Utilities.ReadJsonData.GetData("Education.degree"));*/
-
-            /*IWebElement YearOfGraduationDropdown = driver.FindElement(By.Name("yearOfGraduation"));
-            YearOfGraduationDropdown.Click();
-            YearOfGraduationDropdown.SendKeys("2009");
-            */
             IList edudetails;
             edudetails = Utilities.ReadJsonData.GetDataObject2("Education[*]");
             int j = 0;
@@ -76,156 +64,85 @@ namespace MarsQACompetitionTask.Pages
            
             Console.WriteLine("edu details '''''", j);
 
-
             for (int i = 0 ; i < j; i++)
             {
-
-                IWebElement AddNew = driver.FindElement(By.XPath("//div[@class='ui bottom attached tab segment tooltip-target active']//div[@class='ui teal button '][normalize-space()='Add New']"));
                 AddNew.Click();
-
-                // Console.WriteLine(eduDetails.ToList());
-                IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
                 CollegeName.Click();
                 CollegeName.SendKeys(Utilities.ReadJsonData.GetData("Education["+i+"].CollegeUniversityName")); 
 
-
-
-                IWebElement CountryNameDropdown = driver.FindElement(By.Name("country"));
-                CountryNameDropdown.Click();
-                
+                CountryNameDropdown.Click();                
                 CountryNameDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education["+i+"].country"));
 
-
-                IWebElement TitleDropdown = driver.FindElement(By.Name("title"));
                 TitleDropdown.Click();
                 TitleDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education["+i+"].title")); 
 
-                IWebElement Degree = driver.FindElement(By.Name("degree"));
                 Degree.Click();
                 Degree.Clear();
                 Degree.SendKeys(Utilities.ReadJsonData.GetData("Education["+i+ "].Degree")); 
 
-
-
-              IWebElement YearOfGraduationDropdown = driver.FindElement(By.Name("yearOfGraduation"));
                 YearOfGraduationDropdown.Click();
                 YearOfGraduationDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education["+i+"].yearOfGraduation"));
 
-
-                IWebElement AddEducation = driver.FindElement(By.XPath("//input[@value='Add']"));
                 AddEducation.Click();
+                // Assert.That(AddMessagechk.Text == "Education had been Added", Is.True);
+                Thread.Sleep(6000);
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20));
 
-                IWebElement AddMessagechk = driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
+                wait.PollingInterval = TimeSpan.FromMilliseconds(200);
+                wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[normalize-space()='Education has been added']")));
 
-                if (AddMessagechk.Text == "Education had been Added")
-                {
-                    Console.WriteLine("New Education record has been added");
-                }
-                else
-                {
-                    Console.WriteLine("Failed to Create Education Record");
-                }
+              //  Assert.IsTrue(AddMessagechk.Text == "Education had been Added");
 
-                //YearOfGraduationDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education[i].yearOfGraduation"));
-            }
-            
-            /* IWebElement YearOfGraduationDropdown = driver.FindElement(By.Name("yearOfGraduation"));
-             YearOfGraduationDropdown.Click();
-            var education= Utilities.ReadJsonData.GetData("Education");
-                JSONArray usersList = (JSONArray) (Utilities.ReadJsonData.GetData("Education"));
-            System.out.println("Users List-> "+usersList);
-            
-            
-            YearOfGraduationDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education.yearOfGraduation"))
-
-
-
-
-             ;*/
-
-            //List edulist = (Utilities.ReadJsonData.GetData("Education"));
-            
-            //System.out.println("Users List-> " + usersList);
-
-
-           IWebElement AddMessage = driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
-            
-            if (AddMessage.Text == "Education had been Added")
-            {
-                Console.WriteLine("New Education record has been added");
-            }
-            else
-            {
-                Console.WriteLine("Failed to Create Education Record");
             }
 
+            return AddMessagechk.Text;
         }
         public void CancelAddedEducation()
         {
-            IWebElement EducationTab = driver.FindElement(By.XPath("//*[@id=\"account-profile-section\"]/div/section[2]/div/div/div/div[3]/form/div[1]/a[3]"));
 
-            EducationTab.Click();
+            EducationTab1.Click();
             int i = 0;
-            IWebElement AddNew = driver.FindElement(By.XPath("//div[@class='ui bottom attached tab segment tooltip-target active']//div[@class='ui teal button '][normalize-space()='Add New']"));
+            
             AddNew.Click();
 
-            IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
             CollegeName.Click();
             CollegeName.Clear();
             CollegeName.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].CollegeUniversityName"));
 
-            IWebElement CountryNameDropdown = driver.FindElement(By.Name("country"));
             CountryNameDropdown.Click();
             CountryNameDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].country"));
 
 
-            IWebElement TitleDropdown = driver.FindElement(By.Name("title"));
             TitleDropdown.Click();
             TitleDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].title"));
 
 
-            IWebElement Degree = driver.FindElement(By.Name("degree"));
             Degree.Click();
             Degree.Clear();
             Degree.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].Degree"));
 
-
-            IWebElement YearOfGraduationDropdown = driver.FindElement(By.Name("yearOfGraduation"));
             YearOfGraduationDropdown.Click();
             YearOfGraduationDropdown.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].yearOfGraduation"));
 
-
-            IWebElement CancelEducation = driver.FindElement(By.XPath("//input[@value='Cancel']"));
             CancelEducation.Click();
+            
         }
-        public void EditEducation()
+        public String EditEducation()
         {
-            //IWebElement EditEducation = driver.FindElement(By.XPath("//td[@class='right aligned']//i[@class='outline write icon']"));
             IWebElement EditEducation = driver.FindElement(By.XPath("//tbody/tr/td[6]/span[1]/i[1]"));
             Thread.Sleep(2000);
             EditEducation.Click();
 
             int i = 0;
  
-            IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
             CollegeName.Click();
             CollegeName.Clear();
             CollegeName.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].updateTitle"));
 
 
-            IWebElement UpdateBtn = driver.FindElement(By.XPath("//input[@value='Update']"));
             UpdateBtn.Click();
 
-            IWebElement UpdateMessage = driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
-
-            if (UpdateMessage.Text == "Education had been Added")
-            {
-                Console.WriteLine("New Education record has been Updated");
-            }
-            else
-            {
-                Console.WriteLine("Failed to Updated Education Record");
-            }
+            return UpdateMessage.Text;
         }
 
         public void CancelEditEducation()
@@ -236,25 +153,17 @@ namespace MarsQACompetitionTask.Pages
 
             int i = 0;
 
-            IWebElement CollegeName = driver.FindElement(By.Name("instituteName"));
             CollegeName.Click();
             CollegeName.Clear();
             CollegeName.SendKeys(Utilities.ReadJsonData.GetData("Education[" + i + "].CollegeUniversityName"));
 
-
-            //IWebElement CancelEditEducation = driver.FindElement(By.XPath("//td[@class='right aligned']//i[@class='outline write icon']"));
-            //CancelEditEducation.Click();
-
-            IWebElement CancelBtn1 = driver.FindElement(By.XPath("//input[@value='Cancel']"));
             CancelBtn1.Click();
         }
         public void DeleteEducation()
         {
-            //IWebElement DeleteButton = driver.FindElement(By.XPath("/html[1]/body[1]/div[1]/div[1]/section[2]/div[1]/div[1]/div[1]/div[3]/form[1]/div[4]/div[1]/div[2]/div[1]/table[1]/tbody[2]/tr[1]/td[6]/span[2]/i[1]"));
             IWebElement DeleteButton = driver.FindElement(By.XPath("/html/body/div[1]/div/section[2]/div/div/div/div[3]/form/div[4]/div/div[2]/div/table/tbody/tr/td[6]/span[2]/i"));
             DeleteButton.Click();
 
-            IWebElement DeleteMessage = driver.FindElement(By.XPath("//div[@class='ns-box-inner']"));
             if(DeleteMessage.Text == "Education Entry Successfully Removed")
             {
                 Console.WriteLine("True");

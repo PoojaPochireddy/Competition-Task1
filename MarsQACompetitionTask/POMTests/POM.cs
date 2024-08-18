@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace MarsQACompetitionTask.POMTests
 {
     [TestFixture]
-    public class POM : CommonDriver
+    public class EducationAndCertificationTests  : CommonDriver
     {
         /*public IWebDriver driver;
         public SignIn SignInObj;
@@ -27,7 +27,8 @@ namespace MarsQACompetitionTask.POMTests
         {
             SignInObj.SigninStep();
             EducationObj.EducationTab();
-            EducationObj.CreateEducation();      
+            EducationObj.CleanEducationTable();
+            Assert.AreEqual("Education has been added", EducationObj.CreateEducation());
         }
 
         [Test, Order(2), Description("Cancel Record")]
@@ -42,8 +43,9 @@ namespace MarsQACompetitionTask.POMTests
         {
             SignInObj.SigninStep();
             EducationObj.EducationTab();
-            EducationObj.EditEducation();
-            
+            EducationObj.CleanEducationTable();
+            Assert.AreEqual("Education has been added", EducationObj.CreateEducation());
+            Assert.AreEqual("Education as been updated", EducationObj.EditEducation());
         }
         [Test, Order(4), Description("CancelUpdated Record")]
         public void CancelUpdatedEducationTests()
@@ -80,7 +82,7 @@ namespace MarsQACompetitionTask.POMTests
         {
             SignInObj.SigninStep();
             CertificationObj.CertificationTab();
-            CertificationObj.EditCertification();
+            CertificationObj.EditCertification1();
 
         }
         [Test, Order(9), Description("CancelUpdated Record")]
@@ -95,7 +97,7 @@ namespace MarsQACompetitionTask.POMTests
         {
             SignInObj.SigninStep();
             CertificationObj.CertificationTab();
-            CertificationObj.DeleteCertification();
+            CertificationObj.DeleteCertification1();
             Thread.Sleep(1000);
         }
 
